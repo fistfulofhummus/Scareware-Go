@@ -21,8 +21,6 @@ var (
 	procMessageBoxA           = user32DLL.NewProc("MessageBoxA")
 )
 
-// The program below changes the wallpaper of ze windows. It is designed to compare working with Win32 from Go and from C
-
 func changeWallpaper(imgURL string, img string) bool {
 	network.DownloadFile(imgURL)
 	rFile, err := os.Open(img)
@@ -107,7 +105,7 @@ func filesystemTraversal(root string, numberOfFiles int) {
 		}
 		for _, e := range entries {
 			newRoot := root + e.Name() + "\\"
-			filesystemTraversal(newRoot)
+			filesystemTraversal(newRoot, numberOfFiles)
 		}
 
 	} else {
